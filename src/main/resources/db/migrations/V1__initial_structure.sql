@@ -1,6 +1,4 @@
-create schema bank;
-use
-bank;
+use bank;
 
 create table person
 (
