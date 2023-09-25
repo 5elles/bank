@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SettlementType {
     private Integer id;
-    private String name;
+    private String settlementTypeName;
+    private String shortName;
 }

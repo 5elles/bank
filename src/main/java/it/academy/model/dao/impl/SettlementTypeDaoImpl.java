@@ -1,8 +1,8 @@
 package it.academy.model.dao.impl;
 
 import it.academy.model.DataSource;
-import it.academy.model.dao.RegionDao;
-import it.academy.model.entity.Region;
+import it.academy.model.dao.SettlementTypeDao;
+import it.academy.model.entity.SettlementType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,20 +11,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RegionDaoImpl implements RegionDao {
+public class SettlementTypeDaoImpl implements SettlementTypeDao {
     @Override
-    public Region getById(Integer entityId) {
+    public SettlementType getById(Integer entityId) {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("select * from region where id=?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("select * from settlement_type where id=?")) {
             preparedStatement.setInt(1, entityId);
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            return Region.builder()
-                    .country(new CountryDaoImpl().getById(resultSet.getInt("country_id")))
+            return SettlementType.builder()
                     .id(resultSet.getInt("id"))
-                    .regionName(resultSet.getString("region_name"))
+                    .settlementTypeName(resultSet.getString("settlement_type"))
+                    .shortName(resultSet.getString("short_name"))
                     .build();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -32,30 +31,31 @@ public class RegionDaoImpl implements RegionDao {
     }
 
     @Override
-    public List<Region> getALl() {
-        List<Region> result = new ArrayList<>();
+    public List<SettlementType> getALl() {
+        List<SettlementType> settlementTypes = new ArrayList<>();
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("select * from region")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("select * from settlement_type")) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Region region = Region.builder()
+                SettlementType settlementType = SettlementType.builder()
                         .id(resultSet.getInt("id"))
-                        .country(new CountryDaoImpl().getById(resultSet.getInt("country_id")))
-                        .regionName(resultSet.getString("region_name"))
+                        .settlementTypeName(resultSet.getString("settlement_type"))
+                        .shortName(resultSet.getString("short_name"))
                         .build();
-                result.add(region);
+
+                settlementTypes.add(settlementType);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return result;
+        return settlementTypes;
     }
 
     @Override
     public int getCount() {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement("select count(*) as count from region")) {
-            ResultSet resultSet = statement.executeQuery();
+             PreparedStatement preparedStatement = connection.prepareStatement("select count(*) as count from settlement_type")) {
+            ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             return resultSet.getInt("count");
         } catch (SQLException e) {
@@ -65,13 +65,13 @@ public class RegionDaoImpl implements RegionDao {
     }
 
     @Override
-    public boolean save(Region entity) {
+    public boolean save(SettlementType entity) {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("insert into region (country_id, region_name) values (?, ?)")) {
-            preparedStatement.setInt(1, entity.getCountry().getId());
-            preparedStatement.setString(2, entity.getRegionName());
-            int executed = preparedStatement.executeUpdate();
-            if (executed > 0) return true;
+             PreparedStatement preparedStatement = connection.prepareStatement("insert into settlement_type (settlement_type, short_name) values (?, ?)")) {
+            preparedStatement.setString(1, entity.getSettlementTypeName());
+            preparedStatement.setString(2, entity.getShortName());
+
+            if (preparedStatement.executeUpdate() > 0) return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -79,14 +79,15 @@ public class RegionDaoImpl implements RegionDao {
     }
 
     @Override
-    public boolean update(Region entity) {
+    public boolean update(SettlementType entity) {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("update region set country_id=?, region_name=? where id=?")) {
-            preparedStatement.setInt(1, entity.getCountry().getId());
-            preparedStatement.setString(2, entity.getRegionName());
+             PreparedStatement preparedStatement = connection.prepareStatement("update settlement_type set settlement_type = ?, short_name = ? where id=?")) {
+            preparedStatement.setString(1, entity.getSettlementTypeName());
+            preparedStatement.setString(2, entity.getShortName());
             preparedStatement.setInt(3, entity.getId());
-            int executed = preparedStatement.executeUpdate();
-            if (executed > 0) return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -94,9 +95,9 @@ public class RegionDaoImpl implements RegionDao {
     }
 
     @Override
-    public boolean delete(Region entity) {
+    public boolean delete(SettlementType entity) {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("delete from region where id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("delete from settlement_type where id = ?")) {
             preparedStatement.setInt(1, entity.getId());
             if (preparedStatement.executeUpdate() > 0) return true;
         } catch (SQLException e) {
@@ -108,7 +109,7 @@ public class RegionDaoImpl implements RegionDao {
     @Override
     public boolean deleteById(Integer entityId) {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("delete from region where id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("delete from settlement_type where id = ?")) {
             preparedStatement.setInt(1, entityId);
             if (preparedStatement.executeUpdate() > 0) return true;
         } catch (SQLException e) {

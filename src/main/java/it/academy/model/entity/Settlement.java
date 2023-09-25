@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Settlement {
     private Integer id;
-    private Region region;
     private SettlementType settlementType;
-    private String name;
+    private String settlementName;
+    private Region region;
 }

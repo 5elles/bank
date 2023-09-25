@@ -110,8 +110,8 @@ public class CountryDaoImpl implements CountryDao {
     @Override
     public boolean deleteById(Integer entityId) {
         try (Connection connection = DataSource.getInstance().getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("delete from country where id = ?")){
-           preparedStatement.setInt(1, entityId);
+             PreparedStatement preparedStatement = connection.prepareStatement("delete from country where id = ?")) {
+            preparedStatement.setInt(1, entityId);
             int executed = preparedStatement.executeUpdate();
             if (executed > 0) return true;
         } catch (SQLException e) {
